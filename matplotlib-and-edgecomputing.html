@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+
+    <!--- basic page needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <title>Standard Post - Wordsmith</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- mobile specific metas
+    ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- CSS
+    ================================================== -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/vendor.css">
+    <link rel="stylesheet" href="css/main.css">
+
+    <!-- script
+    ================================================== -->
+    <script src="js/modernizr.js"></script>
+
+</head>
+
+<body id="top">
+
+    <!-- preloader
+    ================================================== -->
+    <div id="preloader">
+        <div id="loader" class="dots-fade">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+
+    <!-- header
+    ================================================== -->
+    <header class="s-header header">
+        <div class="header__logo">
+            <a class="logo" href="index.html">
+                <img src="images/test.png" alt="Homepage">
+            </a>
+        </div>
+        <nav class="header__nav-wrap">
+            <ul class="header__nav">
+                <li><a href="index.html" title="">Home</a></li>
+                <li><a href="https://arnavshah.com" title="">About</a></li>
+                <li><a href="page-contact.html" title="">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <!-- s-content
+    ================================================== -->
+    <section class="s-content s-content--top-padding s-content--narrow" style="padding-bottom: 0rem">
+
+        <article class="row entry format-standard">
+
+            <div class="entry__media col-full">
+                <div class="entry__post-thumb">
+                    <img src="images/thumbs/single/standard/matplotlib.jpg" alt="">
+                </div>
+            </div>
+
+            <div class="entry__header col-full">
+                <h1 class="entry__header-title display-1">
+                    Matplotlib and Edge Computing
+                </h1>
+                <ul class="entry__header-meta">
+                    <li class="date">May 21, 2020</li>
+                    <li class="byline">
+                        By
+                        <a href="#0">Arnav Shah</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-full entry__main">
+
+                <h2>A case for edge computing</h2>
+
+                <p>Edge computing is often frowned upon by Internet of Things (IoT) developers. Although the practice
+                    reduces latency of data aggregation, it is extremely resource-demanding and prevents centralized
+                    data processing and collection.</p>
+
+                <p>That being said, edge computing allows front-end programmers to perform data processing with the
+                    tools that they are already comfortable with. Simply put, edge computing drastically facilitates the
+                    data pipeline for a much broader range of developers than status-quo methods.</p>
+
+                <p>This is all the more true for novice developers that are just beginning to dip their feet into the
+                    field. For people who haven’t mastered full stack development, edge computing is a lot more
+                    forgiving and almost always the desirable path.</p>
+
+                <p>On top of providing an easier production experience, edge computing allows developers to utilize
+                    libraries and packages that they’re already familiar with, giving a whole new level of power and
+                    functionality to code.</p>
+
+                <p>For the reasons above, I decided to build a simple IoT edge computing application that utilizes a
+                    Raspberry Pi and Matplotlib to graph temperature data. Without any further ado, let’s dive into how
+                    I did it.</p>
+
+                <h2>The code</h2>
+
+<pre><code>
+    import os
+    import glob
+    import time
+    from matplotlib import pyplot as plt
+    import re
+    x = []
+    y = []
+    for number in range(1, 61):
+        x.append(number)
+    os.system(‘modprobe w1-gpio’)
+    os.system(‘modprobe w1-therm’)
+    base_dir = ‘/sys/bus/w1/devices/’
+    device_folder = glob.glob(base_dir + ‘28*’)[0]
+    device_file = device_folder + ‘/w1_slave’
+    pattern = re.compile(r'\d\d\d\d\d')
+    def read_temp():
+        with open(device_file, 'r') as file:
+            sentence = file.read()
+            mo = re.search(pattern, sentence)
+        return int(mo.group()) / 1000
+    while len(y) <= 60:
+        y.append(read_temp())
+    plt.plot(x, y)
+    plt.xlabel('Last 60 checks')
+    plt.ylabel('Temperature (°C)')
+    plt.title('Temperature')
+    plt.show()
+</code></pre>
+                <p><i>note that I only recorded 60 readings for demo purposes. If you have enough RAM, it’s possible to collect more than a week’s worth of data without sacrificing performance.</i></p>
+
+                <h3>Initializing our thermal sensor</h3>
+                <p>Firstly, we declare our variables x and y. These are lists that will later be used by Matplotlib to plot a broken line graph. Next, we call os.system and we declare a bunch of variables that point to various directories and files. Don’t worry too much about these, all they do is basically initialize thermal reading capabilities for our temperature sensor. With that out of the way, we can move onto the actual logic.</p>
+
+                <h3>Reading the temperature</h3>
+                <p>We commence by declaring a regex pattern variable that looks for 5 consecutive digits. Next, we define a function that opens our w1_slave file from before, stores the bytes of its output in a variable called sentence , and then searches the file for our pattern that we defined earlier as pattern. The five digit number is simply a highly precise Celsius reading. By dividing it by 1000, we get the normal Celsius temperature as a decimal value.</p>
+                
+                <h3>Creating our graph</h3>
+                <p>Next, we call read_temp and append the Celsius temperature value to our y list until it has an amount of readings equivalent to our x list (60 in my case). Finally, we plot the graph using our x and y axes, and give the graph its title and subtitles.</p>
+                <div class="entry__author">
+                    <img src="images/avatars/user-05.jpg" alt="">
+
+                    <div class="entry__author-about">
+                        <h5 class="entry__author-name">
+                            <span>Posted by</span>
+                            <a href="#0">Arnav Shah</a>
+                        </h5>
+
+                        <div class="entry__author-desc">
+                            <p>
+                                I'm a 14 y/o Software developer, problem solver, activator, and thinker. I've consulted
+                                for GoogleX and Oxford properties, spoken at TEDxDonMills and co-founded <a
+                                    href="https://thermapal.com">thermapal.com</a>. I love writing and sharing my ideas
+                                to the world
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- s-entry__main -->
+
+        </article> <!-- end entry/article -->
+
+
+        <div class="s-content__entry-nav">
+            <div class="row s-content__nav">
+                <div class="col-six s-content__prev">
+                    <a href="how-to-save-70-freshwater.html" rel="prev">
+                        <span>Previous Post</span>
+                        How to Save 70% of Global Freshwater
+                    </a>
+                </div>
+                <div class="col-six s-content__next">
+                    <a href="#0" rel="next">
+                        <span>Next Post</span>
+                        3 Benefits of Minimalism In Interior Design.
+                    </a>
+                </div>
+            </div>
+        </div> <!-- end s-content__pagenav -->
+
+    </section> <!-- end s-content -->
+
+
+    <!-- s-extra
+    ================================================== -->
+
+
+    <!-- s-footer
+    ================================================== -->
+
+
+    <!-- Java Script
+    ================================================== -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+
+</html>
